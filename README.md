@@ -7,6 +7,10 @@ RC 창의 도전 프로젝트
 #### 스케치 목록   
 		1. sketch_sep23a.ino : ESP8266 펌웨어 업데이트 이 후 AT 통신 테스트 코드   
 
+		2. sketch_sep25a.ino : 
+				- hercules tcp server(port : 23)을 열어서 우노 보드의 ESP8266과 연결   
+				- tcp server에서 명령어 전달   
+				- 우노 보드의 ESP8266에서 명령어를 받아서 우노 보드 내장 LED를 제어   
 
 
 #### * AT 명령어 모음   
