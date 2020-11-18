@@ -43,34 +43,35 @@ RC 창의 도전 프로젝트
 		
 		```php
 		<?php
-	// apache server 명, MySQL 관리자 이름, MySQL 패스워드, 접근하려는 데이터 베이스 이름 
-	$con = mysqli_connect("localhost", "root", "", "test");
+		// apache server 명, MySQL 관리자 이름, MySQL 패스워드, 접근하려는 데이터 베이스 이름 
+		$con = mysqli_connect("localhost", "root", "", "test");
 
-	// mysql에 지정한 url을 통해 연결 시도 
-	if(mysqli_connect_errno($con)){
-		echo "Failed to connect to MySql : " . mysqli_connect_error();
-	}
+		// mysql에 지정한 url을 통해 연결 시도 
+		if(mysqli_connect_errno($con)){
+			echo "Failed to connect to MySql : " . mysqli_connect_error();
+		}
 
-	// mysql에 연결 시도 성공 시 문자열 셋을 utf-8로 설정 
-	mysqli_set_charset($con, "utf8");
+		// mysql에 연결 시도 성공 시 문자열 셋을 utf-8로 설정 
+		mysqli_set_charset($con, "utf8");
 
-	// MySQL에 쿼리문을 전송하기 위해 변수 설정 
-	// MySQL Url을 지정했던 변수와 함께 쿼리문을 인자로 전달 
-	$res = mysqli_query($con, "select * from member");
-	$result = array(); // 쿼리문에 대한 결과를 array()로 저장하기 위해 array()형 변수 선언 
+		// MySQL에 쿼리문을 전송하기 위해 변수 설정 
+		// MySQL Url을 지정했던 변수와 함께 쿼리문을 인자로 전달 
+		$res = mysqli_query($con, "select * from member");
+		$result = array(); // 쿼리문에 대한 결과를 array()로 저장하기 위해 array()형 변수 선언 
 
-	// array()형 변수를 순회 
-	while($row = mysqli_fetch_array($res)){
-		// select * from member에 대한 결과 값을 array에 삽입
-		array_push($result,
-			array('name'=>$row['name'], 'id'=>$row['id'], 'pass'=>$row['pass']));
-	}
+		// array()형 변수를 순회 
+		while($row = mysqli_fetch_array($res)){
+			// select * from member에 대한 결과 값을 array에 삽입
+			array_push($result,
+				array('name'=>$row['name'], 'id'=>$row['id'], 'pass'=>$row['pass']));
+		}
 	
-	// select * from member 결과에 대한 array()형 변수를 json 형태로 인코딩
-	// Android에서 parsing 하기 위함 
-	echo json_encode(array("result"=>$result));
-	mysqli_close($con); // 사용 후 MySQL Connection은 연결을 끊어줌 
-?>
+		// select * from member 결과에 대한 array()형 변수를 json 형태로 인코딩
+		// Android에서 parsing 하기 위함 
+		echo json_encode(array("result"=>$result));
+		mysqli_close($con); // 사용 후 MySQL Connection은 연결을 끊어줌 
+			
+		?>
 		```
 
 
