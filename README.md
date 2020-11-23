@@ -75,3 +75,192 @@ RC 창의 도전 프로젝트
 		```
 
 
+#### Andriod Studio && Arduino Bluetooth Connection   
+		* 주의사항   
+				1. 우선 안드로이드 휴대폰으로 블루투스 모듈과 연결이 되는지 확인해본다.   
+				2. 연결이 안된다면 블루투스를 초기화 시킨다.   
+				3. 블루투스 이름, 핀, 통신속도 순으로 초기화 진행   
+					AT+NAME(사용할 이름), AT+PIN(사용할 핀번호), AT+BAUD4   
+				
+```arduino
+// 시리얼 통신을 통해서 블루투스 초기화
+#include <SoftwareSerial.h>
+
+// RX, TX
+SoftwareSerial softwareSerial(2, 3);
+char data;
+
+void setup() {
+  Serial.begin(9600);
+   softwareSerial.begin(9600);
+   Serial.println("Ready");
+}
+
+void loop() {
+   if(softwareSerial.available()){
+    Serial.write(softwareSerial.read());
+   }
+   if(Serial.available()){
+    softwareSerial.write(Serial.read());
+   }
+}
+```   
+
+		* Android Studio app 수준의 gradle 파일의 최하단에 dependencies{ ... }에 추가   
+				* implementation 'com.akexorcist:bluetoothspp:1.0.0'   
+
+#### Android Studio BluetoothSPP 코드   
+		* 연결을 누르면 통신 가능한 블루투스 기기를 찾음   
+				* 아무것도 뜨지 않는다면 위에 주의사항 필독   
+		* 전송을 누르면 "Text"라는 문자열을 아두이노에 전송되고 시리얼 모니터에 출력됨   
+
+```java   
+package com.example.bluetoothproject;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import app.akexorcist.bluetotohspp.library.BluetoothSPP;
+import app.akexorcist.bluetotohspp.library.BluetoothState;
+import app.akexorcist.bluetotohspp.library.DeviceList;
+
+public class MainActivity extends AppCompatActivity {
+
+    private BluetoothSPP bt;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        bt = new BluetoothSPP(this);
+
+        if(!bt.isBluetoothAvailable()){
+            Toast.makeText(getApplicationContext(), "bluetooth is not available", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        // 아두이노에서 넘어오는 데이터를 수신하는 부분
+        // 1바이트씩 넘어옴
+        // data에 아두이노에서 온 데이터를 넣어 바이트를 모두 합친 후 msg를 통해 리턴됨
+        bt.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener(){
+            public void onDataReceived(byte[] data, String msg){
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        bt.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener(){
+            public void onDeviceConnected(String name, String address){
+                Toast.makeText(getApplicationContext(), "Connected to " + name+"\n"+address, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onDeviceDisconnected() {
+                Toast.makeText(getApplicationContext(), "Connection lost", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onDeviceConnectionFailed() {
+                Toast.makeText(getApplicationContext(), "Unable to connect", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Button btnConnect = findViewById(R.id.btnConnect);
+        btnConnect.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                if(bt.getServiceState() == BluetoothState.STATE_CONNECTED){
+                    bt.disconnect();
+                }
+                else{
+                    Intent intent = new Intent(getApplicationContext(), DeviceList.class);
+                    startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+                }
+            }
+        });
+    }
+
+    public void onDestroy(){
+        super.onDestroy();
+        bt.stopService();
+    }
+    public void onStart(){
+        super.onStart();
+
+        if(!bt.isBluetoothAvailable()){
+            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(intent, BluetoothState.REQUEST_ENABLE_BT);
+        }else{
+            if(!bt.isServiceAvailable()){
+                bt.setupService();
+                // 아두이노와 같은 기기들과 연결할 때 사용하는 것
+                bt.startService(BluetoothState.DEVICE_OTHER);
+                setup();
+            }
+        }
+    }
+
+    // 블루투스 서비스 시작 후 실행되는 부분
+    // 전송 버튼 누르면 Text라는 글자가 아두이노에 전송됨
+    public void setup(){
+        Button btnSend = findViewById(R.id.btnSend);
+        btnSend.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                bt.send("Text", true);
+            }
+        });
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
+            if (resultCode == Activity.RESULT_OK) {
+                bt.connect(data);
+            }
+        } else if (requestCode == BluetoothState.REQUEST_ENABLE_BT) {
+            if (resultCode == Activity.RESULT_OK) {
+                bt.setupService();
+                bt.startService(BluetoothState.DEVICE_OTHER);
+                setup();
+            } else {
+                Toast.makeText(getApplicationContext(), "Bluetooth was not enabled", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+}
+```   
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="연결"
+         />
+
+    <Button
+        android:id="@+id/btnSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="보내기"
+        />
+
+
+</LinearLayout>
+```
