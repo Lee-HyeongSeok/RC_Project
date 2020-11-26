@@ -17,5 +17,9 @@ class WaterTankActivity : AppCompatActivity() {
         home2.setOnClickListener {
             finish()
         }
+        setting2.setOnClickListener {
+            val intent: Intent = Intent(this, SettingActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
