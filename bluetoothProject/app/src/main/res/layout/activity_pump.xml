@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#f4e7d4"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".PumpActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            android:layout_marginTop="30dp"
+            android:text="↓↓펌프 작동↓↓"
+            android:textColor="#000000"
+            android:textSize="25dp"></TextView>
+    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            >
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:layout_gravity="center"
+                android:src="@drawable/pumpicon"></ImageView>
+
+            <TextView
+                android:id="@+id/pumpState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="펌프작동 대기중..."
+                android:textColor="#000000"
+                android:textSize="25dp"></TextView>
+
+            <Button
+                android:id="@+id/pumpOn"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/blue_button"
+                android:text="물주기"
+                android:textAllCaps="false"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+
+
+
+    <LinearLayout
+        android:background="#f4e7d4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+        <ImageButton
+            android:backgroundTint="#f4e7d4"
+            android:id="@+id/home3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/home"/>
+
+        <ImageButton
+            android:id="@+id/chat3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#f4e7d4"
+            android:src="@drawable/chat" />
+
+        <ImageButton
+            android:id="@+id/setting3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#f4e7d4"
+            android:src="@drawable/ic_baseline_settings_24" />
+    </LinearLayout>
+
+</LinearLayout>
