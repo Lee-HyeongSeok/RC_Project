@@ -264,3 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
 </LinearLayout>
 ```
+
+#### 최종 순서도   
+
+![Untitled Diagram](https://user-images.githubusercontent.com/55940552/104094565-fe6c8000-52d4-11eb-8651-c098456e2aff.png)   
